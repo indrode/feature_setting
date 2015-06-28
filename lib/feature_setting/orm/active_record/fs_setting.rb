@@ -11,12 +11,6 @@ module FeatureSetting
     end
 
     class << self
-      SETTINGS.each do |key, _|
-        define_method(key.to_s) do
-          self.find_by_key(key).value
-        end
-      end
-
       def settings
         self.new.settings
       end
