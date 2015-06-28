@@ -11,7 +11,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
     describe '.settings' do
       it 'returns all defined settings' do
         expect(fss.settings).to be_a(Hash)
-        expect(fss.settings).to eq({ test: 'value' })
+        expect(fss.settings).to eq({ test: 'value', version: '0.1.0' })
       end
     end
 
@@ -30,7 +30,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
 
     describe '.remove_old_settings!' do
       it 'destroys old settings in database but not defined anymore' do
-        fss.create!(key: 'test', value: 'value')
+        fss.create!(key: 'some', value: 'value')
         expect { fss.remove_old_settings! }.to change{ fss.count }.from(3).to(2)
       end
     end
