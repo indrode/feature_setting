@@ -6,20 +6,21 @@ module FeatureSetting
       test: false
     }
 
+    def features
+      self.class::FEATURES
+    end
+
     class << self
-      FEATURES.each do |key, _|
-        define_method("#{key}_enabled?") do
-          self.find_by_key(key).enabled
-        end
-      end
-
       def features
-        FEATURES
+        self.new.features
       end
 
-      def reload_features!
+      def init_features!
         features.each do |key, value|
           self.create_with(key: key, enabled: value).find_or_create_by(key: key)
+          define_singleton_method("#{key}_enabled?") do
+            self.find_by_key(key).enabled
+          end
         end
         remove_old_features!
       end

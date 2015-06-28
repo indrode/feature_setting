@@ -6,7 +6,7 @@ RSpec.describe FeatureSetting::FsFeature, type: :model do
   describe 'class methods' do
     before do
       stub_const('FeatureSetting::FsFeature::FEATURES', { test: false, authentication: true })
-      fsf.reload_features!
+      fsf.init_features!
     end
 
     describe '.features' do
@@ -22,7 +22,7 @@ RSpec.describe FeatureSetting::FsFeature, type: :model do
       end
     end
 
-    describe '.reload_features!' do
+    describe '.init_features!' do
       it 'stores defined features' do
         expect(fsf.count).to eq(2)
         expect(fsf.last.key).to eq('authentication')
