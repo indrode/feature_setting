@@ -1,12 +1,10 @@
-# FeatureSetting
+# feature_setting
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/feature_setting`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+**This gem is under development and has not been pushed!**
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add the gem to your application's Gemfile:
 
 ```ruby
 gem 'feature_setting'
@@ -14,15 +12,59 @@ gem 'feature_setting'
 
 And then execute:
 
-    $ bundle
+    $ rails feature_setting:install
 
-Or install it yourself as:
+This generates a migration file. To run this migration:
 
-    $ gem install feature_setting
+    $ rake db:migrate
 
-## Usage
+## Features
 
-TODO: Write usage instructions here
+To create a new Feature class, inherit your class from `FeatureSetting::FsFeature`. Then define your features and call `init_features!`.
+
+```ruby
+class MyFeatures < FeatureSetting::FsFeature
+  FEATURES = { newfeature: true }
+  init_features!
+end
+```
+
+You can now do the following things:
+
+```ruby
+MyFeatures.newfeature_enabled? # => true
+MyFeatures.disable!(:newfeature)
+MyFeatures.newfeature_enabled? # => false
+MyFeatures.enable!(:newfeature)
+MyFeatures.newfeature_enabled? # => true
+```
+
+Default values for features are defined in your class and persisted in the database.
+
+## Settings
+
+To create a new Setting class, inherit your class from `FeatureSetting::FsSetting`. Then define your settings and call `init_settings!`.
+
+```ruby
+class MySettings < FeatureSetting::FsSetting
+  SETTINGS = { newsetting: 12300 }
+  init_settings!
+end
+```
+
+You can now do the following things:
+
+```ruby
+MySettings.newsetting # => 12300
+MySettings.set!(newsetting: 1000)
+MySettings.newsetting # => 1000
+
+# additional ways to set setting values
+MySettings.set!(:newsetting, 1000)
+MySettings.set!('newsetting', 1000)
+```
+
+Default values for settings are defined in your class and persisted in the database.
 
 ## Development
 
@@ -32,7 +74,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/feature_setting/fork )
+1. Fork it ( https://github.com/indrode/feature_setting/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
