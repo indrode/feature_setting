@@ -36,9 +36,14 @@ module FeatureSetting
       end
 
       def set!(key = nil, value = nil, **hash)
-        if settings.has_key?(hash.keys.first) || settings.has_key?(key.to_sym)
-          self.find_by_key(hash.keys.first || key.to_sym).update_attributes(value: hash.values.first || value)
+        if key = key_exists?(key, hash)
+          self.find_by_key(key).update_attributes(value: hash.values.first || value)
         end
+      end
+
+      def key_exists?(key = nil, hash = {})
+        settings.has_key?(hash.keys.first) || settings.has_key?(key.to_sym)
+        hash.keys.first || key.to_sym
       end
 
       def defined_settings

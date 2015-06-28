@@ -58,5 +58,16 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
         expect(fss.test).to eq('new value')
       end
     end
+
+    describe '.key_exists?(key, hash)' do
+      it 'returns the key' do
+        allow(fss).to receive(:settings).and_return({ key1: '10', key2: '20' })
+        expect(fss.key_exists?('key1')).to eq(:key1)
+      end
+      it 'returns the key if hash is passed' do
+        allow(fss).to receive(:settings).and_return({ key1: '10', key2: '20' })
+        expect(fss.key_exists?(nil, { key1: '10'})).to eq(:key1)
+      end
+    end
   end
 end
