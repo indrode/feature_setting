@@ -1,5 +1,7 @@
 # feature_setting
 
+[![Code Climate](https://codeclimate.com/github/indrode/feature_setting/badges/gpa.svg)](https://codeclimate.com/github/indrode/feature_setting)
+
 **This gem is under development and has not been pushed!**
 
 ## Installation
