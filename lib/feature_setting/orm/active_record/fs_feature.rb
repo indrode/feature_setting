@@ -51,7 +51,5 @@ module FeatureSetting
         self.all.pluck(:key)
       end
     end
-
-    # reload_features!
   end
 end

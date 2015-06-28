@@ -2,11 +2,13 @@ require 'active_record'
 
 module FeatureSetting
   class FsSetting < ActiveRecord::Base
-    self.table_name = 'fs_settings'
-
     SETTINGS = {
       test: 'value',
     }
+
+    def settings
+      self.class::SETTINGS
+    end
 
     class << self
       SETTINGS.each do |key, _|
@@ -16,12 +18,15 @@ module FeatureSetting
       end
 
       def settings
-        SETTINGS
+        self.new.settings
       end
 
-      def reload_settings!
+      def init_settings!
         settings.each do |key, value|
           self.create_with(key: key, value: value).find_or_create_by(key: key)
+          define_singleton_method(key.to_s) do
+            self.find_by_key(key).value
+          end
         end
         remove_old_settings!
       end
@@ -46,7 +51,5 @@ module FeatureSetting
         self.all.pluck(:key)
       end
     end
-
-    # reload_settings!
   end
 end

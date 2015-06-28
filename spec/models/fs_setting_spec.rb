@@ -5,7 +5,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
   describe 'class methods' do
     before do
       stub_const('FeatureSetting::FsSetting::SETTINGS', { test: 'value', version: '0.1.0' })
-      fss.reload_settings!
+      fss.init_settings!
     end
 
     describe '.settings' do
@@ -21,7 +21,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
       end
     end
 
-    describe '.reload_settings!' do
+    describe '.init_settings!' do
       it 'stores defined settings' do
         expect(fss.count).to eq(2)
         expect(fss.last.key).to eq('version')
