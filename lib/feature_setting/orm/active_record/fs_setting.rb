@@ -25,7 +25,7 @@ module FeatureSetting
 
       def init_settings!
         settings.each do |key, value|
-          self.create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(key: key)
+          self.create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(klass: klass, key: key)
           define_singleton_method(key.to_s) do
             record = self.where(key: key, klass: klass).first
             convert_to_type(record.value, record.value_type)
@@ -35,7 +35,7 @@ module FeatureSetting
       end
 
       def remove_old_settings!
-        self.where(key: all_stored_settings - defined_settings).destroy_all
+        self.where(klass: klass, key: all_stored_settings - defined_settings).destroy_all
       end
 
       def reset_settings!

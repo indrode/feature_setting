@@ -30,7 +30,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
 
     describe '.remove_old_settings!' do
       it 'destroys old settings in database but not defined anymore' do
-        fss.create!(key: 'some', value: 'value')
+        fss.create!(key: 'some', klass: 'FeatureSetting::FsSetting', value: 'value')
         expect { fss.remove_old_settings! }.to change{ fss.count }.from(3).to(2)
       end
     end
