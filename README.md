@@ -27,7 +27,7 @@ end
 if Setting.allowed_users.include?(current_user)
   # to that
 end
-
+```
 
 ## Installation
 
