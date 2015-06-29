@@ -45,7 +45,7 @@ module FeatureSetting
 
       def set!(key = nil, value = nil, **hash)
         key = existing_key(key, hash)
-        raise 'ERROR: FsSetting key is missing or does not exist.' unless key
+        fail 'ERROR: FsSetting key is missing or does not exist.' unless key
 
         record = self.where(key: key, klass: klass).first
         new_value = hash.values.first || value
@@ -56,12 +56,10 @@ module FeatureSetting
       end
 
       def existing_key(key = nil, hash = {})
-        begin
-          settings.has_key?(hash.keys.first) || settings.has_key?(key.to_sym)
-          hash.keys.first || key.to_sym
-        rescue
-          nil
-        end
+        settings.key?(hash.keys.first) || settings.key?(key.to_sym)
+        hash.keys.first || key.to_sym
+      rescue
+        nil
       end
 
       def defined_settings

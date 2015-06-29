@@ -50,14 +50,14 @@ module FeatureSetting
       end
 
       def enable!(key)
-        if features.has_key?(key.to_sym)
+        if features.key?(key.to_sym)
           record = self.where(key: key, klass: klass).first
           record.update_attributes(enabled: true)
         end
       end
 
       def disable!(key)
-        if features.has_key?(key.to_sym)
+        if features.key?(key.to_sym)
           record = self.where(key: key, klass: klass).first
           record.update_attributes(enabled: false)
         end

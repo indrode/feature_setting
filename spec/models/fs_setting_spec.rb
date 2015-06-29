@@ -4,14 +4,14 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
   let(:fss) { FeatureSetting::FsSetting }
   describe 'class methods' do
     before do
-      stub_const('FeatureSetting::FsSetting::SETTINGS', { test: 'value', version: '0.1.0' })
+      stub_const('FeatureSetting::FsSetting::SETTINGS', test: 'value', version: '0.1.0')
       fss.init_settings!
     end
 
     describe '.settings' do
       it 'returns all defined settings' do
         expect(fss.settings).to be_a(Hash)
-        expect(fss.settings).to eq({ test: 'value', version: '0.1.0' })
+        expect(fss.settings).to eq(test: 'value', version: '0.1.0')
       end
     end
 
@@ -31,7 +31,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
     describe '.remove_old_settings!' do
       it 'destroys old settings in database but not defined anymore' do
         fss.create!(key: 'some', klass: 'FeatureSetting::FsSetting', value: 'value')
-        expect { fss.remove_old_settings! }.to change{ fss.count }.from(3).to(2)
+        expect { fss.remove_old_settings! }.to change { fss.count }.from(3).to(2)
       end
     end
 
@@ -86,7 +86,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
 
     describe '.existing_key(key, hash)' do
       before do
-        allow(fss).to receive(:settings).and_return({ key1: '10', key2: '20' })
+        allow(fss).to receive(:settings).and_return(key1: '10', key2: '20')
       end
 
       it 'returns the key' do
@@ -94,7 +94,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
       end
 
       it 'returns the key if hash is passed' do
-        expect(fss.existing_key(nil, { key1: '10'})).to eq(:key1)
+        expect(fss.existing_key(nil, key1: '10')).to eq(:key1)
       end
 
       it 'raises error if key is nil' do

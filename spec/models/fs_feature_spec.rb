@@ -5,14 +5,14 @@ RSpec.describe FeatureSetting::FsFeature, type: :model do
 
   describe 'class methods' do
     before do
-      stub_const('FeatureSetting::FsFeature::FEATURES', { test: false, authentication: true })
+      stub_const('FeatureSetting::FsFeature::FEATURES', test: false, authentication: true)
       fsf.init_features!
     end
 
     describe '.features' do
       it 'returns all defined features' do
         expect(fsf.features).to be_a(Hash)
-        expect(fsf.features).to eq({ test: false, authentication: true })
+        expect(fsf.features).to eq(test: false, authentication: true)
       end
     end
 
@@ -32,7 +32,7 @@ RSpec.describe FeatureSetting::FsFeature, type: :model do
     describe '.remove_old_features!' do
       it 'destroys old features in database but not defined anymore' do
         fsf.create!(key: 'new', enabled: true, klass: 'FeatureSetting::FsFeature')
-        expect { fsf.remove_old_features! }.to change{ fsf.count }.from(3).to(2)
+        expect { fsf.remove_old_features! }.to change { fsf.count }.from(3).to(2)
       end
     end
 
