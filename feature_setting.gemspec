@@ -6,6 +6,7 @@ require 'feature_setting/version'
 Gem::Specification.new do |spec|
   spec.name          = 'feature_setting'
   spec.version       = FeatureSetting::VERSION
+  spec.licenses      = ['MIT']
   spec.authors       = ['Indro De']
   spec.email         = ['indro.de@gmail.com']
 
