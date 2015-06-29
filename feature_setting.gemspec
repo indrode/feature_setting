@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Indro De']
   spec.email         = ['indro.de@gmail.com']
 
-  spec.summary       = 'Add Feature and Setting classes to your Rails app.'
+  spec.summary       = 'A lightweight feature/setting DSL for Rails applications.'
   spec.description   = %q{This gem introduces the concept of "features" and "settings" to your Rails app. It provides an easy way to define such features and settings with default values right in your code and will persist them in the database.}
   spec.homepage      = 'https://github.com/indrode/feature_setting'
 
