@@ -27,7 +27,7 @@ module FeatureSetting
         settings.each do |key, value|
           self.create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(key: key)
           define_singleton_method(key.to_s) do
-            record = self.where(key: key, klass: klass)
+            record = self.where(key: key, klass: klass).first
             convert_to_type(record.value, value.class.to_s)
           end
         end
@@ -46,7 +46,7 @@ module FeatureSetting
 
       def set!(key = nil, value = nil, **hash)
         if key = key_exists?(key, hash)
-          record = self.where(key: key, klass: klass)
+          record = self.where(key: key, klass: klass).first
           new_value = hash.values.first || value
           record.update_attributes(
             value: convert_to_string(new_value, new_value.class.to_s),
