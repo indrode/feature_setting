@@ -25,9 +25,12 @@ module FeatureSetting
 
       def init_features!
         features.each do |key, value|
+          puts '-' * 100
+          puts "#{self.class} key: #{key} enabled: #{value} klass: #{klass}"
+          puts '-' * 100
           self.create_with(key: key, enabled: value, klass: klass).find_or_create_by(key: key)
-          record = self.where(key: key, klass: klass).first
           define_singleton_method("#{key}_enabled?") do
+            record = self.where(key: key, klass: klass).first
             record.enabled
           end
           define_singleton_method("enable_#{key}!") do
@@ -44,15 +47,22 @@ module FeatureSetting
         self.where(key: all_stored_features - defined_features).destroy_all
       end
 
+      def reset_features!
+        self.where(klass: klass).destroy_all
+        init_features!
+      end
+
       def enable!(key)
         if features.has_key?(key.to_sym)
-          record = self.where(key: key, klass: klass).first.update_attributes(enabled: true)
+          record = self.where(key: key, klass: klass).first
+          record.update_attributes(enabled: true)
         end
       end
 
       def disable!(key)
         if features.has_key?(key.to_sym)
-          record = self.where(key: key, klass: klass).first.update_attributes(enabled: false)
+          record = self.where(key: key, klass: klass).first
+          record.update_attributes(enabled: false)
         end
       end
 

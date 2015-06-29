@@ -39,25 +39,29 @@ module FeatureSetting
       end
 
       def reset_settings!
-        # TODO: add specs
         self.where(klass: klass).destroy_all
         init_settings!
       end
 
       def set!(key = nil, value = nil, **hash)
-        if key = key_exists?(key, hash)
-          record = self.where(key: key, klass: klass).first
-          new_value = hash.values.first || value
-          record.update_attributes(
-            value: convert_to_string(new_value, new_value.class.to_s),
-            value_type: value.class.to_s
-          )
-        end
+        key = existing_key(key, hash)
+        raise 'ERROR: FsSetting key is missing or does not exist.' unless key
+
+        record = self.where(key: key, klass: klass).first
+        new_value = hash.values.first || value
+        record.update_attributes(
+          value: convert_to_string(new_value, new_value.class.to_s),
+          value_type: value.class.to_s
+        )
       end
 
-      def key_exists?(key = nil, hash = {})
-        settings.has_key?(hash.keys.first) || settings.has_key?(key.to_sym)
-        hash.keys.first || key.to_sym
+      def existing_key(key = nil, hash = {})
+        begin
+          settings.has_key?(hash.keys.first) || settings.has_key?(key.to_sym)
+          hash.keys.first || key.to_sym
+        rescue
+          nil
+        end
       end
 
       def defined_settings

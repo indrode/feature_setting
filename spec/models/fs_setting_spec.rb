@@ -37,7 +37,17 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
 
     describe '.key' do
       it 'creates class methods' do
-          expect(fss.test).to eq('value')
+        expect(fss.test).to eq('value')
+      end
+    end
+
+    describe '.reset_settings!' do
+      let(:all_settings) { double(:all_settings) }
+      it 'should destroy the records for this klass' do
+        allow(fss).to receive(:init_settings!)
+        expect(all_settings).to receive(:destroy_all).and_return true
+        expect(fss).to receive(:where).and_return all_settings
+        fss.reset_settings!
       end
     end
 
@@ -59,14 +69,25 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
       end
     end
 
-    describe '.key_exists?(key, hash)' do
-      it 'returns the key' do
+    describe '.existing_key(key, hash)' do
+      before do
         allow(fss).to receive(:settings).and_return({ key1: '10', key2: '20' })
-        expect(fss.key_exists?('key1')).to eq(:key1)
       end
+
+      it 'returns the key' do
+        expect(fss.existing_key('key1')).to eq(:key1)
+      end
+
       it 'returns the key if hash is passed' do
-        allow(fss).to receive(:settings).and_return({ key1: '10', key2: '20' })
-        expect(fss.key_exists?(nil, { key1: '10'})).to eq(:key1)
+        expect(fss.existing_key(nil, { key1: '10'})).to eq(:key1)
+      end
+
+      it 'raises error if key is nil' do
+        expect(fss.existing_key(nil, {})).to be_nil
+      end
+
+      it 'raises error if key is nil' do
+        expect(fss.existing_key).to be_nil
       end
     end
   end
