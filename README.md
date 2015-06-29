@@ -1,3 +1,5 @@
+**Note: This gem is still under construction!**
+
 # feature_setting
 
 [![Code Climate](https://codeclimate.com/github/indrode/feature_setting/badges/gpa.svg)](https://codeclimate.com/github/indrode/feature_setting)
