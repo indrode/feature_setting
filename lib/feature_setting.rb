@@ -4,5 +4,4 @@ require 'feature_setting/orm/active_record/fs_setting'
 require 'feature_setting/orm/active_record/fs_feature'
 
 module FeatureSetting
-  # Your code goes here...
 end

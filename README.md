@@ -2,7 +2,32 @@
 
 [![Code Climate](https://codeclimate.com/github/indrode/feature_setting/badges/gpa.svg)](https://codeclimate.com/github/indrode/feature_setting)
 
-**This gem is under development and has not been pushed!**
+This gem introduces the concept of "features" and "settings" to your Rails app. It provides an easy way to define such features and settings with default values right in your code and will persist them in the database.
+
+- a feature is a key that can either be enabled or disabled
+- a setting is a key that has a value (of type String, Fixnum, Float, or Array)
+
+In practice, features can be used to switch certain functionality in your code on or off. This can be used to roll out functionality without the need to deploy. Settings are very flexible in that they can hold any value. The possibilities are endless.
+
+Both, features and settings are configured with default values that persist in the database and then can be updated if required.
+
+```ruby
+# using features:
+if Feature.caching_enabled?
+  # do this
+else
+  # do that
+end
+
+# using settings:
+if Setting.error_threshold > 500
+    # do this
+end
+
+if Setting.allowed_users.include?(current_user)
+  # to that
+end
+
 
 ## Installation
 
@@ -12,72 +37,130 @@ Add the gem to your application's Gemfile:
 gem 'feature_setting'
 ```
 
-And then execute:
+Now run the `feature_setting` installation:
 
-    $ rails feature_setting:install
+    $ rails generate feature_setting:install
 
 This generates a migration file. To run this migration:
 
     $ rake db:migrate
 
-## Features
+The next step is to define your Feature and/or Setting classes.
 
-To create a new Feature class, inherit your class from `FeatureSetting::FsFeature`. Then define your features and call `init_features!`.
+
+## Usage
+
+### Features
+
+To create a new Feature class, inherit a class from `FeatureSetting::FsFeature`. Then define your features in th `FEATURES` hash and call `init_features!`.
 
 ```ruby
-class MyFeatures < FeatureSetting::FsFeature
-  FEATURES = { newfeature: true }
+class Features < FeatureSetting::FsFeature
+  FEATURES = {
+    newfeature: true
+  }
+
   init_features!
 end
 ```
 
-You can now do the following things:
+For each key you have defined, a class method `keyname_enabled?` is generated. You can now do the following:
 
 ```ruby
-MyFeatures.newfeature_enabled? # => true
-MyFeatures.disable!(:newfeature)
-MyFeatures.newfeature_enabled? # => false
-MyFeatures.enable!(:newfeature)
-MyFeatures.newfeature_enabled? # => true
+Features.newfeature_enabled? # => true
+Features.disable!(:newfeature)
+Features.newfeature_enabled? # => false
+Features.enable!(:newfeature)
+Features.newfeature_enabled? # => true
 ```
 
-Default values for features are defined in your class and persisted in the database.
-
-## Settings
-
-To create a new Setting class, inherit your class from `FeatureSetting::FsSetting`. Then define your settings and call `init_settings!`.
+Or you can use these shortcuts:
 
 ```ruby
-class MySettings < FeatureSetting::FsSetting
-  SETTINGS = { newsetting: 12300 }
+Features.enable_newfeature!
+Features.disable_newfeature!
+```
+
+Default values for features are defined in your class and  current values are persisted in the database.
+
+
+### Settings
+
+To create a new Setting class, inherit a class from `FeatureSetting::FsSetting`. Then define your settings in the `SETTINGS` hash and call `init_settings!`. The following example shows some possible definitions.
+
+```ruby
+class Settings < FeatureSetting::FsSetting
+  SETTINGS = {
+    setting_one: 12300,
+    setting_two: 'some string',
+    setting_three: %w(one two three),
+    setting_four: ENV['SETTING_FOUR']
+  }
+
   init_settings!
 end
 ```
 
-You can now do the following things:
+You can now do the following:
 
 ```ruby
-MySettings.newsetting # => 12300
-MySettings.set!(newsetting: 1000)
-MySettings.newsetting # => 1000
+Settings.newsetting # => 12300
+Settings.set!(newsetting: 1000)
+Settings.newsetting # => 1000
 
-# additional ways to set setting values
-MySettings.set!(:newsetting, 1000)
-MySettings.set!('newsetting', 1000)
+# other ways to set setting values
+Settings.set!(:newsetting, 1000)
+Settings.set!('newsetting', 1000)
 ```
 
-Default values for settings are defined in your class and persisted in the database.
+Default values for settings are defined in your class and  current values are persisted in the database.
 
-## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/console` for an interactive prompt that will allow you to experiment.
+### Advanced Features
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release` to create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Settings and features can be reset to their default values as configured in your class definition:
+
+```ruby
+Features.reset_features!
+Settings.reset_settings!
+```
+
+Display all defined keys:
+
+```ruby
+Features.defined_features
+Settings.defined_settings
+```
+
+You can create as many Setting or Feature classes as you desire. Here are some examples:
+
+```ruby
+SearchSettings.levenshtein_distance
+TestFeatures.experimental_search_enabled?
+```
 
 ## Contributing
 
-1. Fork it ( https://github.com/indrode/feature_setting/fork )
+1. Fork it (https://github.com/indrode/feature_setting/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+Notes:
+
+- Contributions without tests won't be accepted.
+- Please don't update the gem version.
+
+
+## License
+
+The MIT License (MIT)
+
+Copyright (c) 2015 Indro De ([http://indrode.com](http://indrode.com))
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

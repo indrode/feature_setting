@@ -10,16 +10,25 @@ module FeatureSetting
       self.class::SETTINGS
     end
 
+    def klass
+      self.class
+    end
+
     class << self
       def settings
         self.new.settings
       end
 
+      def klass
+        self.new.klass
+      end
+
       def init_settings!
         settings.each do |key, value|
-          self.create_with(key: key, value: value).find_or_create_by(key: key)
+          self.create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(key: key)
           define_singleton_method(key.to_s) do
-            self.find_by_key(key).value
+            record = self.where(key: key, klass: klass)
+            convert_to_type(record.value, value.class.to_s)
           end
         end
         remove_old_settings!
@@ -29,9 +38,20 @@ module FeatureSetting
         self.where(key: all_stored_settings - defined_settings).destroy_all
       end
 
+      def reset_settings!
+        # TODO: add specs
+        self.where(klass: klass).destroy_all
+        init_settings!
+      end
+
       def set!(key = nil, value = nil, **hash)
         if key = key_exists?(key, hash)
-          self.find_by_key(key).update_attributes(value: hash.values.first || value)
+          record = self.where(key: key, klass: klass)
+          new_value = hash.values.first || value
+          record.update_attributes(
+            value: convert_to_string(new_value, new_value.class.to_s),
+            value_type: value.class.to_s
+          )
         end
       end
 
@@ -48,6 +68,30 @@ module FeatureSetting
 
       def all_stored_settings
         self.all.pluck(:key)
+      end
+
+      def convert_to_type(value, type)
+        case type
+        when 'String'
+          value.to_s
+        when 'Fixnum'
+          value.to_i
+        when 'Float'
+          value.to_f
+        when 'Array'
+          value.split('|||')
+        else
+          value.to_s
+        end
+      end
+
+      def convert_to_string(value, type)
+        case type
+        when 'Array'
+          value.join('|||')
+        else
+          value.to_s
+        end
       end
     end
   end
