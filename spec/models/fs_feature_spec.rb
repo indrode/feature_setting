@@ -31,7 +31,7 @@ RSpec.describe FeatureSetting::FsFeature, type: :model do
 
     describe '.remove_old_features!' do
       it 'destroys old features in database but not defined anymore' do
-        fsf.create!(key: 'new', enabled: true)
+        fsf.create!(key: 'new', enabled: true, klass: 'FeatureSetting::FsFeature')
         expect { fsf.remove_old_features! }.to change{ fsf.count }.from(3).to(2)
       end
     end
