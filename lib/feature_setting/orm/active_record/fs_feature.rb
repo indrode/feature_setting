@@ -25,9 +25,6 @@ module FeatureSetting
 
       def init_features!
         features.each do |key, value|
-          puts '-' * 100
-          puts "#{self.class} key: #{key} enabled: #{value} klass: #{klass}"
-          puts '-' * 100
           self.create_with(key: key, enabled: value, klass: klass).find_or_create_by(key: key)
           define_singleton_method("#{key}_enabled?") do
             record = self.where(key: key, klass: klass).first
