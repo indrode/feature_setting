@@ -28,7 +28,7 @@ module FeatureSetting
           self.create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(key: key)
           define_singleton_method(key.to_s) do
             record = self.where(key: key, klass: klass).first
-            convert_to_type(record.value, value.class.to_s)
+            convert_to_type(record.value, record.value_type)
           end
         end
         remove_old_settings!
@@ -51,7 +51,7 @@ module FeatureSetting
         new_value = hash.values.first || value
         record.update_attributes(
           value: convert_to_string(new_value, new_value.class.to_s),
-          value_type: value.class.to_s
+          value_type: new_value.class.to_s
         )
       end
 
@@ -84,8 +84,6 @@ module FeatureSetting
           value.to_f
         when 'Array'
           value.split('|||')
-        else
-          value.to_s
         end
       end
 

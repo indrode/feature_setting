@@ -36,6 +36,17 @@ RSpec.describe FeatureSetting::FsFeature, type: :model do
       end
     end
 
+
+    describe '.reset_features!' do
+      let(:all_features) { double(:all_features) }
+      it 'should destroy the records for this klass' do
+        allow(fsf).to receive(:init_features!)
+        expect(all_features).to receive(:destroy_all).and_return true
+        expect(fsf).to receive(:where).and_return all_features
+        fsf.reset_features!
+      end
+    end
+
     describe '.key_enabled?' do
       it 'creates enabled? methods' do
         expect(fsf.test_enabled?).to be_falsey
@@ -52,6 +63,13 @@ RSpec.describe FeatureSetting::FsFeature, type: :model do
       it 'works with symbols or strings' do
         fsf.enable! 'test'
         expect(fsf.test_enabled?).to be_truthy
+      end
+
+      it 'works when using custom method' do
+        fsf.enable_test!
+        expect(fsf.test_enabled?).to be_truthy
+        fsf.disable_test!
+        expect(fsf.test_enabled?).to be_falsey
       end
     end
 

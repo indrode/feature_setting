@@ -67,6 +67,21 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
         fss.set!(test: 'new value')
         expect(fss.test).to eq('new value')
       end
+
+      it 'sets Array values' do
+        fss.set!(test: %w(one two three))
+        expect(fss.test).to eq(%w(one two three))
+      end
+
+      it 'sets Float values' do
+        fss.set!(test: 1.3)
+        expect(fss.test).to eq(1.3)
+      end
+
+      it 'sets Fixnum values' do
+        fss.set!(test: 42)
+        expect(fss.test).to eq(42)
+      end
     end
 
     describe '.existing_key(key, hash)' do
