@@ -104,11 +104,12 @@ end
 You can now do the following:
 
 ```ruby
-Settings.newsetting # => 12300
-Settings.set!(newsetting: 1000)
+Settings.newsetting # => 500
+Settings.newsetting = 2000
 Settings.newsetting # => 1000
 
-# other ways to set setting values
+# other ways to set setting values:
+Settings.set!(newsetting: 1000)
 Settings.set!(:newsetting, 1000)
 Settings.set!('newsetting', 1000)
 ```

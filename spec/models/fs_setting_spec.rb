@@ -41,6 +41,14 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
       end
     end
 
+    describe '.key= setter method' do
+      it 'creates a setter method' do
+        expect(fss.version).to eq('0.1.0')
+        fss.version = '0.1.1'
+        expect(fss.version).to eq('0.1.1')
+      end
+    end
+
     describe '.reset_settings!' do
       let(:all_settings) { double(:all_settings) }
       it 'should destroy the records for this klass' do

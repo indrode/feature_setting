@@ -30,6 +30,10 @@ module FeatureSetting
             record = self.where(key: key, klass: klass).first
             convert_to_type(record.value, record.value_type)
           end
+          define_singleton_method("#{key}=") do |value|
+            record = self.where(key: key, klass: klass).first
+            set!(key, value)
+          end
         end
         remove_old_settings!
       end
