@@ -26,16 +26,24 @@ module FeatureSetting
       def init_settings!
         settings.each do |key, value|
           self.create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(klass: klass, key: key)
-          define_singleton_method(key.to_s) do
-            record = self.where(key: key, klass: klass).first
-            convert_to_type(record.value, record.value_type)
-          end
-          define_singleton_method("#{key}=") do |value|
-            record = self.where(key: key, klass: klass).first
-            set!(key, value)
-          end
+          define_getter_method(key)
+          define_setter_method(key)
         end
         remove_old_settings!
+      end
+
+      def define_getter_method(key)
+        define_singleton_method(key.to_s) do
+          record = self.where(key: key, klass: klass).first
+          convert_to_type(record.value, record.value_type)
+        end
+      end
+
+      def define_setter_method(key)
+        define_singleton_method("#{key}=") do |value|
+          record = self.where(key: key, klass: klass).first
+          set!(key, value)
+        end
       end
 
       def remove_old_settings!
