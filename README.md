@@ -7,9 +7,9 @@ This gem introduces the concept of "features" and "settings" to your Rails app. 
 - a feature is a key that can either be enabled or disabled
 - a setting is a key that has a value (of type String, Fixnum, Float, or Array)
 
-In practice, features can be used to switch certain functionality in your code on or off. This can be used to roll out functionality without the need to deploy. Settings are very flexible in that they can hold any value. The possibilities are endless.
+In practice, features can be used to switch certain functionality in your code on or off. This can be used to roll out functionality without the need to deploy. Settings are very flexible in that they can hold any value. The possibilities are endless. They should not be used to store application secrets, such as tokens, passwords, and keys. Those type of settings should rather be stored in environment variables using tools like [https://github.com/bkeepers/dotenv](dotenv).
 
-Both, features and settings are configured with default values that persist in the database and then can be updated if required.
+Both, features and settings are configured in your code with default values. They can then be updated at any time in the Rails console and persist in the database.
 
 ```ruby
 # using features:
@@ -52,10 +52,10 @@ The next step is to define your Feature and/or Setting classes.
 
 ### Features
 
-To create a new Feature class, inherit a class from `FeatureSetting::FsFeature`. Then define your features in th `FEATURES` hash and call `init_features!`.
+To create a new Feature class, inherit a class from `FeatureSetting::Feature` (if using a gem version prior to `1.2.0` use `FeatureSetting::FsFeature`). Then define your features in a hash called `FEATURES` and call `init_features!`.
 
 ```ruby
-class Features < FeatureSetting::FsFeature
+class Features < FeatureSetting::Feature
   FEATURES = {
     newfeature: true
   }
@@ -81,15 +81,15 @@ Features.enable_newfeature!
 Features.disable_newfeature!
 ```
 
-Default values for features are defined in your class and  current values are persisted in the database.
+Default values for features are defined in your class and current values are persisted in the database.
 
 
 ### Settings
 
-To create a new Setting class, inherit a class from `FeatureSetting::FsSetting`. Then define your settings in the `SETTINGS` hash and call `init_settings!`. The following example shows some possible definitions.
+To create a new Setting class, inherit a class from `FeatureSetting::Setting` (if using a gem version prior to `1.2.0` use `FeatureSetting::FsSetting`). Then define your settings in a hash called `SETTINGS` and call `init_settings!`. The following example shows the setup and some possible definitions.
 
 ```ruby
-class Settings < FeatureSetting::FsSetting
+class Settings < FeatureSetting::Setting
   SETTINGS = {
     setting_one: 12300,
     setting_two: 'some string',

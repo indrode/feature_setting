@@ -107,4 +107,7 @@ module FeatureSetting
       end
     end
   end
+
+  # alias this class to Setting
+  Setting = FsSetting
 end

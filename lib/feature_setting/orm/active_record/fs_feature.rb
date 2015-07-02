@@ -74,4 +74,7 @@ module FeatureSetting
       end
     end
   end
+
+  # alias this class to Feature
+  Feature = FsFeature
 end

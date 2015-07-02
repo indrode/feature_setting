@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe FeatureSetting::FsFeature, type: :model do
-  let(:fsf) { FeatureSetting::FsFeature }
+  # using identical FeatureSetting::Feature class
+  let(:fsf) { FeatureSetting::Feature }
 
   describe 'class methods' do
     before do

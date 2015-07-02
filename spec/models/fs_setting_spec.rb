@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe FeatureSetting::FsSetting, type: :model do
-  let(:fss) { FeatureSetting::FsSetting }
+  # using identical FeatureSetting::Setting class
+  let(:fss) { FeatureSetting::Setting }
   describe 'class methods' do
     before do
       stub_const('FeatureSetting::FsSetting::SETTINGS', test: 'value', version: '0.1.0')
