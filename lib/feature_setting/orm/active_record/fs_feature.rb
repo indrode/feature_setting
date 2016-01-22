@@ -20,7 +20,7 @@ module FeatureSetting
       end
 
       def klass
-        self.new.klass
+        self.new.klass.to_s
       end
 
       def init_features!
