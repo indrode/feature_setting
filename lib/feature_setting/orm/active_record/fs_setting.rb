@@ -92,6 +92,8 @@ module FeatureSetting
           value.to_i
         when 'Float'
           value.to_f
+        when 'Symbol'
+          value.to_sym
         when 'Array'
           value.split('|||')
         end
