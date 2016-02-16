@@ -118,7 +118,12 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
 
       it 'sets hashes as JSON' do
         fss.set!(test: { key1: 123, key2: 345 })
-        expect(fss.test).to eq({ key1: 123, key2: 345 })
+        expect(fss.test).to eq({ 'key1' => 123, 'key2' => 345 })
+      end
+
+      it 'returns hashes with_indifferent_access' do
+        fss.set!(test: { key1: 123, key2: 345 })
+        expect(fss.test[:key1]).to eq(123)
       end
     end
 

@@ -105,7 +105,7 @@ module FeatureSetting
         when 'Array'
           value.split('|||')
         when 'Hash'
-          JSON.parse(value).try(:symbolize_keys)
+          JSON.parse(value).try(:with_indifferent_access)
         end
       end
 
