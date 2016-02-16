@@ -1,4 +1,5 @@
 require 'active_record'
+require 'json'
 
 module FeatureSetting
   class FsSetting < ActiveRecord::Base
@@ -103,11 +104,15 @@ module FeatureSetting
           value.to_sym
         when 'Array'
           value.split('|||')
+        when 'Hash'
+          JSON.parse(value).try(:symbolize_keys)
         end
       end
 
       def convert_to_string(value, type)
         case type
+        when 'Hash'
+          value.to_json
         when 'Array'
           value.join('|||')
         else

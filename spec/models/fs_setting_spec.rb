@@ -115,6 +115,11 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
         fss.set!(test: nil)
         expect(fss.test).to eq(false)
       end
+
+      it 'sets hashes as JSON' do
+        fss.set!(test: { key1: 123, key2: 345 })
+        expect(fss.test).to eq({ key1: 123, key2: 345 })
+      end
     end
 
     describe '.existing_key(key, hash)' do
