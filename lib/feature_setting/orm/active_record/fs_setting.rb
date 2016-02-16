@@ -85,9 +85,16 @@ module FeatureSetting
       end
 
       def convert_to_type(value, type)
+        p type
         case type
         when 'String'
           value.to_s
+        when 'TrueClass'
+          true
+        when 'NilClass'
+          false
+        when 'FalseClass'
+          false
         when 'Fixnum'
           value.to_i
         when 'Float'

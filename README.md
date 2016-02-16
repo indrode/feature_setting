@@ -91,10 +91,12 @@ To create a new Setting class, inherit a class from `FeatureSetting::Setting` (i
 ```ruby
 class Settings < FeatureSetting::Setting
   SETTINGS = {
-    setting_one: 12300,
-    setting_two: 'some string',
+    setting_one:   12300,
+    setting_two:   'some string',
     setting_three: %w(one two three),
-    setting_four: ENV['SETTING_FOUR']
+    setting_four:  ENV['SETTING_FOUR'],
+    setting_five:  { key1: 'value1', key2: 'value2' }
+    setting_six:   true
   }
 
   init_settings!
@@ -104,18 +106,29 @@ end
 You can now do the following:
 
 ```ruby
-Settings.newsetting # => 500
-Settings.newsetting = 2000
-Settings.newsetting # => 2000
+Settings.setting_one # => 12300
+Settings.setting_one = 2000
+Settings.setting_one # => 2000
 
 # other ways to set setting values:
-Settings.set!(newsetting: 1000)
-Settings.set!(:newsetting, 1000)
-Settings.set!('newsetting', 1000)
+Settings.set!(setting_one: 1000)
+Settings.set!(:setting_one, 1000)
+Settings.set!('setting_one', 1000)
 ```
 
 Default values for settings are defined in your class and  current values are persisted in the database.
 
+Settings support the following datatypes:
+
+```
+Boolean
+String
+Integer
+Float
+Symbol
+Array
+Hash
+```
 
 ### Advanced Features
 

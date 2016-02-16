@@ -95,6 +95,26 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
         fss.set!(test: 42)
         expect(fss.test).to eq(42)
       end
+
+      it 'sets Symbol values' do
+        fss.set!(test: :ok)
+        expect(fss.test).to eq(:ok)
+      end
+
+      it 'sets Boolean (FalseClass) values' do
+        fss.set!(test: false)
+        expect(fss.test).to eq(false)
+      end
+
+      it 'sets Boolean (TrueClass) values' do
+        fss.set!(test: true)
+        expect(fss.test).to eq(true)
+      end
+
+      it 'sets nil to false' do
+        fss.set!(test: nil)
+        expect(fss.test).to eq(false)
+      end
     end
 
     describe '.existing_key(key, hash)' do
