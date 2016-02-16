@@ -9,7 +9,7 @@ class CreateFsTables < ActiveRecord::Migration
 
     create_table :fs_settings do |t|
       t.string :key
-      t.string :value
+      t.text :value
       t.string :value_type
       t.string :klass
       t.timestamps null: false

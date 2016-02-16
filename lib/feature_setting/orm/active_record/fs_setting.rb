@@ -86,7 +86,6 @@ module FeatureSetting
       end
 
       def convert_to_type(value, type)
-        p type
         case type
         when 'String'
           value.to_s
