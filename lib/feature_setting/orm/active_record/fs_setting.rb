@@ -104,7 +104,7 @@ module FeatureSetting
         when 'Array'
           value.split('|||')
         when 'Hash'
-          JSON.parse(value).try(:with_indifferent_access)
+          Hashie::Mash.new(JSON.parse(value))
         end
       end
 
@@ -114,6 +114,8 @@ module FeatureSetting
           value.to_json
         when 'Array'
           value.join('|||')
+        when 'Hash'
+          value.to_json
         else
           value.to_s
         end
