@@ -5,7 +5,7 @@
 This gem introduces the concept of "features" and "settings" to your Rails app. It provides an easy way to define such features and settings with default values right in your code and will persist them in the database.
 
 - a feature is a key that can either be enabled or disabled
-- a setting is a key that has a value (of type String, Fixnum, Float, or Array)
+- a setting is a key that has a value (of type String, Fixnum, Float, Array, or Hash)
 
 In practice, features can be used to switch certain functionality in your code on or off. This can be used to roll out functionality without the need to deploy. Settings are very flexible in that they can hold any value. The possibilities are endless. They should not be used to store application secrets, such as tokens, passwords, and keys. Those type of settings should rather be stored in environment variables using tools like [https://github.com/bkeepers/dotenv](dotenv).
 
@@ -116,7 +116,7 @@ Settings.set!(:setting_one, 1000)
 Settings.set!('setting_one', 1000)
 ```
 
-Default values for settings are defined in your class and  current values are persisted in the database.
+Default values for settings are defined in your class and current values are persisted in the database.
 
 Settings support the following datatypes:
 
@@ -171,7 +171,7 @@ Notes:
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Indro De ([http://indrode.com](http://indrode.com))
+Copyright (c) 2015, 2016 Indro De ([http://indrode.com](http://indrode.com))
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
