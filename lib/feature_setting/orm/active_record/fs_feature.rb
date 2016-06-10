@@ -15,6 +15,14 @@ module FeatureSetting
     end
 
     class << self
+      def method_missing(m, *args)
+        false
+      end
+
+      def respond_to_missing?(*args)
+        true
+      end
+
       def features
         self.new.features
       end
