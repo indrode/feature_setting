@@ -16,10 +16,18 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
       end
     end
 
-    describe '.defined_settings' do
+    describe '.defined_keys' do
       it 'returns an array of defined setting keys' do
-        expect(fss.defined_settings).to eq(%w(test version sym_test))
+        expect(fss.defined_keys).to eq(%w(test version sym_test))
       end
+    end
+
+    describe '.all_stored_keys' do
+      it 'should do something'
+    end
+
+    describe '.stored_settings' do
+      it 'should do something'
     end
 
     describe '.init_settings!' do
