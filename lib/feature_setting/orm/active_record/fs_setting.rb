@@ -79,6 +79,15 @@ module FeatureSetting
         settings.keys.map(&:to_s)
       end
 
+      def stored_settings
+        hash = {}
+        self.where(klass: klass).each do |record|
+          hash[record.key.to_sym] = convert_to_type(record.value, record.value_type)
+        end
+
+        hash
+      end
+
       private
 
       def all_stored_settings

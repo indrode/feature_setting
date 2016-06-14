@@ -37,7 +37,6 @@ RSpec.describe FeatureSetting::FsFeature, type: :model do
       end
     end
 
-
     describe '.reset_features!' do
       let(:all_features) { double(:all_features) }
       it 'should destroy the records for this klass' do
