@@ -48,7 +48,7 @@ module FeatureSetting
       end
 
       def remove_old_settings!
-        self.where(klass: klass, key: all_stored_settings - defined_settings).destroy_all
+        self.where(klass: klass, key: all_stored_keys - defined_keys).destroy_all
       end
 
       def reset_settings!
@@ -75,7 +75,7 @@ module FeatureSetting
         nil
       end
 
-      def defined_settings
+      def defined_keys
         settings.keys.map(&:to_s)
       end
 
@@ -90,7 +90,7 @@ module FeatureSetting
 
       private
 
-      def all_stored_settings
+      def all_stored_keys
         self.all.pluck(:key)
       end
 
