@@ -63,6 +63,7 @@ class Features < FeatureSetting::Feature
   init_features!
 end
 ```
+**Note:** You can call `init_features!(true)` to remove any existing features that are not defined anymore
 
 For each key you have defined, a class method `keyname_enabled?` is generated. You can now do the following:
 
@@ -102,6 +103,8 @@ class Settings < FeatureSetting::Setting
   init_settings!
 end
 ```
+
+**Note:** You can call `init_settings!(true)` to remove any existing settings that are not defined anymore
 
 You can now do the following:
 

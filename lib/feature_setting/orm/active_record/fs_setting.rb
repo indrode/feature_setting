@@ -24,13 +24,13 @@ module FeatureSetting
         self.new.klass.to_s
       end
 
-      def init_settings!
+      def init_settings!(remove_old_settings = false)
         settings.each do |key, value|
           self.create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(klass: klass, key: key)
           define_getter_method(key)
           define_setter_method(key)
         end
-        remove_old_settings!
+        remove_old_settings! if remove_old_settings
       end
 
       def define_getter_method(key)

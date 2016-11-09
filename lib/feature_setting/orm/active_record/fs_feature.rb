@@ -31,7 +31,7 @@ module FeatureSetting
         self.new.klass.to_s
       end
 
-      def init_features!
+      def init_features!(remove_old_features = false)
         features.each do |key, value|
           self.create_with(key: key, enabled: value, klass: klass).find_or_create_by(klass: klass, key: key)
           define_singleton_method("#{key}_enabled?") do
@@ -45,7 +45,7 @@ module FeatureSetting
             disable!(key)
           end
         end
-        remove_old_features!
+        remove_old_features! if remove_old_features
       end
 
       def remove_old_features!
