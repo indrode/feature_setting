@@ -33,11 +33,22 @@ module FeatureSetting
         remove_old_settings! if remove_old_settings
       end
 
-      def define_getter_method(key)
-        define_singleton_method(key.to_s) do
+      def cache_settings!
+        settings.each do |key, value|
+          self.create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(klass: klass, key: key)
           record = self.where(key: key, klass: klass).first
-          convert_to_type(record.value, record.value_type)
-        end
+          value = convert_to_type(record.value, record.value_type)
+          define_getter_method(key) { value }
+        end        
+      end
+
+      def define_getter_method(key, &block)
+        block = Proc.new do
+          record = self.where(key: key, klass: klass).first
+          convert_to_type(record.value, record.value_type)          
+        end unless block_given?
+
+        define_singleton_method(key.to_s) { block.call }
       end
 
       def define_setter_method(key)
@@ -105,6 +116,8 @@ module FeatureSetting
         when 'FalseClass'
           false
         when 'Fixnum'
+          value.to_i
+        when 'Integer'
           value.to_i
         when 'Float'
           value.to_f

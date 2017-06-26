@@ -48,6 +48,10 @@ module FeatureSetting
         remove_old_features! if remove_old_features
       end
 
+      def cache_features!
+        # that's a noop so far.
+      end
+
       def remove_old_features!
         self.where(key: all_stored_features - defined_features).destroy_all
       end
