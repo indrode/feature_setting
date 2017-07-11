@@ -1,4 +1,4 @@
-class CreateFsTables < ActiveRecord::Migration
+class CreateFsTables < ActiveRecord::Migration[4.2]
   def self.up
     create_table :fs_features do |t|
       t.string :key
@@ -14,5 +14,10 @@ class CreateFsTables < ActiveRecord::Migration
       t.string :klass
       t.timestamps null: false
     end
+  end
+
+  def self.down
+    drop_table :fs_features
+    drop_table :fs_settings
   end
 end

@@ -1,46 +1,81 @@
 require 'spec_helper'
 
 RSpec.describe FeatureSetting::FsSetting, type: :model do
-  # using identical FeatureSetting::Setting class
-  let(:fss) { FeatureSetting::Setting }
+  let(:fss) do 
+    class TestSetting < FeatureSetting::Setting
+      SETTINGS = {
+        test: 'value',
+        version: '0.1.0',
+        sym_test: :a_symbol,
+        hash_test: {
+          one: :two,
+          three: {
+            four: :five,
+            six: :seven
+          }
+        }
+      }
+    end
+    TestSetting
+  end
+
   describe 'class methods' do
     before do
-      stub_const('FeatureSetting::FsSetting::SETTINGS', test: 'value', version: '0.1.0', sym_test: :a_symbol)
       fss.init_settings!
     end
 
     describe '.settings' do
       it 'returns all defined settings' do
         expect(fss.settings).to be_a(Hash)
-        expect(fss.settings).to eq(test: 'value', version: '0.1.0', sym_test: :a_symbol)
+        expect(fss.settings).to eq(
+          test: 'value',
+          version: '0.1.0',
+          sym_test: :a_symbol,
+          hash_test: { one: :two, three: { four: :five, six: :seven } }
+        )
       end
     end
 
     describe '.defined_keys' do
       it 'returns an array of defined setting keys' do
-        expect(fss.defined_keys).to eq(%w(test version sym_test))
+        expect(fss.defined_keys).to eq(%w(test version sym_test hash_test))
       end
-    end
-
-    describe '.all_stored_keys' do
-      it 'should do something'
-    end
-
-    describe '.stored_settings' do
-      it 'should do something'
     end
 
     describe '.init_settings!' do
       it 'stores defined settings' do
-        expect(fss.count).to eq(3)
-        expect(fss.last.key).to eq('sym_test')
+        expect(fss.count).to eq(4)
+        expect(fss.last.key).to eq('hash_test')
+      end
+    end
+
+    describe '.cache_settings!' do
+      before do
+        fss.cache_settings!
+      end
+
+      after do
+        fss.set!(:version, '0.1.0')
+      end
+
+      it 'creates getter methods' do
+        expect(fss.test).to eq('value')
+        expect(fss.version).to eq('0.1.0')
+        expect(fss.hash_test).to eq({ 'one' => 'two', 'three' => { 'four' => 'five', 'six' => 'seven' } })
+      end
+
+      it 'caches stored values, ignoring any changes' do
+        fss.set!(:version, '3.14')
+        expect(fss.version).to eq('0.1.0')
+        fss.set!(:hash_test, 'bla')
+        expect(fss.hash_test).to eq({ 'one' => 'two', 'three' => { 'four' => 'five', 'six' => 'seven' } })
       end
     end
 
     describe '.remove_old_settings!' do
       it 'destroys old settings in database but not defined anymore' do
-        fss.create!(key: 'some', klass: 'FeatureSetting::FsSetting', value: 'value')
-        expect { fss.remove_old_settings! }.to change { fss.count }.from(4).to(3)
+        fss.create!(key: 'some', klass: 'TestSetting', value: 'value')
+        expect { fss.remove_old_settings! }.to change { fss.count }.from(5).to(4)
       end
     end
 

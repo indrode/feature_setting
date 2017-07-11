@@ -2,11 +2,18 @@ require 'spec_helper'
 
 RSpec.describe FeatureSetting::FsFeature, type: :model do
   # using identical FeatureSetting::Feature class
-  let(:fsf) { FeatureSetting::Feature }
+  let(:fsf) do
+    class TestFeature < FeatureSetting::FsFeature
+      FEATURES = {
+        test: false,
+        authentication: true
+      }
+    end
+    TestFeature
+  end
 
   describe 'class methods' do
     before do
-      stub_const('FeatureSetting::FsFeature::FEATURES', test: false, authentication: true)
       fsf.init_features!
     end
 

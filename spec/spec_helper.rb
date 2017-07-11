@@ -1,6 +1,6 @@
 require 'bundler/setup'
-require 'codeclimate-test-reporter'
-CodeClimate::TestReporter.start
+#require 'codeclimate-test-reporter'
+#CodeClimate::TestReporter.start
 Bundler.setup
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
@@ -11,7 +11,7 @@ require 'generators/feature_setting/install/templates/migrations/create_fs_table
 
 ActiveRecord::Base.establish_connection(
   adapter: 'sqlite3',
-  database: 'file::memory:?cache=shared'
+  database: ':memory:'
 )
 ActiveRecord::Base.logger = Logger.new(STDOUT)
 CreateFsTables.up
