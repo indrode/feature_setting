@@ -149,12 +149,13 @@ Features.defined_features
 Settings.defined_settings
 ```
 
-Cache settings:
+Cache settings or features:
 
 ```ruby
+Features.cache_features!
 Settings.cache_settings!
 ```
-Note that a simple call to `Settings.init_settings!` will remove caching.
+Note that a simple call to `Features.init_features!` or `Settings.init_settings!` respectively will remove caching.
 
 You can create as many Setting or Feature classes as you desire. Here are some examples:
 

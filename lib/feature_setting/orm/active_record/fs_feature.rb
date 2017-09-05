@@ -34,22 +34,43 @@ module FeatureSetting
       def init_features!(remove_old_features = false)
         features.each do |key, value|
           self.create_with(key: key, enabled: value, klass: klass).find_or_create_by(klass: klass, key: key)
-          define_singleton_method("#{key}_enabled?") do
-            record = self.where(key: key, klass: klass).first
-            record.enabled
-          end
-          define_singleton_method("enable_#{key}!") do
-            enable!(key)
-          end
-          define_singleton_method("disable_#{key}!") do
-            disable!(key)
-          end
+          define_checker_method(key)
+          define_enabler_method(key)
+          define_disabler_method(key)
         end
         remove_old_features! if remove_old_features
       end
 
       def cache_features!
-        # that's a noop so far.
+        features.each do |key, value|
+          self.create_with(key: key, enabled: value, klass: klass).find_or_create_by(klass: klass, key: key)
+          value = self.where(key: key, klass: klass).first.enabled
+          define_checker_method(key) { value }
+          define_enabler_method(key) { false }
+          define_disabler_method(key) { false }
+        end
+      end
+
+      def define_checker_method(key, &block)
+        block = Proc.new do
+          record = self.where(key: key, klass: klass).first
+          record.enabled
+        end unless block_given?
+        define_singleton_method("#{key}_enabled?") { block.call }
+      end
+
+      def define_enabler_method(key, &block)
+        block = Proc.new do
+          enable!(key)
+        end unless block_given?
+        define_singleton_method("enable_#{key}!") { block.call }
+      end
+
+      def define_disabler_method(key, &block)
+        block = Proc.new do
+          disable!(key)
+        end unless block_given?
+        define_singleton_method("disable_#{key}!") { block.call }
       end
 
       def remove_old_features!

@@ -37,6 +37,28 @@ RSpec.describe FeatureSetting::FsFeature, type: :model do
       end
     end
 
+    describe '.cache_features!' do
+      before do
+        fsf.cache_features!
+      end
+
+      after do
+        fsf.init_features!
+      end
+
+      it 'creates checker methods' do
+        expect(fsf.test_enabled?).to eq(false)
+        expect(fsf.authentication_enabled?).to eq(true)
+      end
+
+      it 'caches stored values, ignoring any changes' do
+        fsf.enable_test!
+        expect(fsf.test_enabled?).to be(false)
+        fsf.disable_authentication!
+        expect(fsf.authentication_enabled?).to be(true)
+      end
+    end
+
     describe '.remove_old_features!' do
       it 'destroys old features in database but not defined anymore' do
         fsf.create!(key: 'new', enabled: true, klass: 'FeatureSetting::FsFeature')
