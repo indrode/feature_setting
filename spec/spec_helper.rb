@@ -4,7 +4,6 @@ require 'bundler/setup'
 Bundler.setup
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
-require 'byebug'
 require 'feature_setting'
 require 'hashie'
 require 'generators/feature_setting/install/templates/migrations/create_fs_tables.rb'
