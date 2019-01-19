@@ -175,6 +175,11 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
         fss.set!(:test, { key1: 123, key2: 345 })
         expect(fss.test[:key1]).to eq(123)
       end
+
+      it 'can be used called with its alias \'update!\'' do
+        fss.update!(:test, { key5: 999 })
+        expect(fss.test[:key5]).to eq(999)
+      end
     end
 
     describe '.existing_key(key, hash)' do

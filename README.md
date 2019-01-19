@@ -114,9 +114,18 @@ Settings.setting_one = 2000
 Settings.setting_one # => 2000
 
 # other ways to set setting values:
-Settings.set!(setting_one: 1000)
-Settings.set!(:setting_one, 1000)
-Settings.set!('setting_one', 1000)
+Settings.update!(setting_one: 1000)
+Settings.update!(:setting_one, 1000)
+Settings.update!('setting_one', 1000)
+```
+
+*NEW IN VERSION 1.6:* Hashes values can be updated individually and will not overwrite the entire hash:
+```
+Settings.setting_five = { key1: 'another_value' }
+=> setting_five:  { key1: 'another_value', key2: 'value2' }
+
+Settings.setting_five = { key3: 'value3' }
+=> setting_five:  { key1: 'another_value', key2: 'value2', key3: 'value3' }
 ```
 
 Default values for settings are defined in your class and current values are persisted in the database.

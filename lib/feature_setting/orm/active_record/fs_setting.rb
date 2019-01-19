@@ -85,6 +85,7 @@ module FeatureSetting
           value_type: value_type
         )
       end
+      alias_method :update!, :set!
 
       def existing_key(key = nil, hash = {})
         settings.key?(hash.keys.first) || settings.key?(key.to_sym)
