@@ -39,13 +39,13 @@ module FeatureSetting
           record = self.where(key: key, klass: klass).first
           value = convert_to_type(record.value, record.value_type)
           define_getter_method(key) { value }
-        end        
+        end
       end
 
       def define_getter_method(key, &block)
         block = Proc.new do
           record = self.where(key: key, klass: klass).first
-          convert_to_type(record.value, record.value_type)          
+          convert_to_type(record.value, record.value_type)
         end unless block_given?
 
         define_singleton_method(key.to_s) { block.call }
@@ -53,7 +53,6 @@ module FeatureSetting
 
       def define_setter_method(key)
         define_singleton_method("#{key}=") do |value|
-          record = self.where(key: key, klass: klass).first
           set!(key, value)
         end
       end
@@ -67,15 +66,23 @@ module FeatureSetting
         init_settings!
       end
 
-      def set!(key = nil, value = nil, **hash)
-        key = existing_key(key, hash)
-        fail 'ERROR: FsSetting key is missing or does not exist.' unless key
+      def set!(key = nil, value = nil)
+        fail 'ERROR: FsSetting key is missing or does not exist.' unless defined_keys.include?(key.to_s)
+        record = self.where(key: key.to_s, klass: klass).first
+        old_value = convert_to_type(record.value, record.value_type)
 
-        record = self.where(key: key, klass: klass).first
-        new_value = hash.values.first || value
+        if record.value_type == 'Hash'
+          fail 'ERROR: The value for a setting of type Hash must be a Hash.' unless value.is_a?(Hash)
+          new_value = old_value.update(value)
+          value_type = 'Hash'
+        else
+          new_value = value
+          value_type = value.class.to_s
+        end
+
         record.update_attributes(
           value: convert_to_string(new_value, new_value.class.to_s),
-          value_type: new_value.class.to_s
+          value_type: value_type
         )
       end
 
@@ -132,12 +139,10 @@ module FeatureSetting
 
       def convert_to_string(value, type)
         case type
-        when 'Hash'
+        when 'Hash', 'Hashie::Mash'
           value.to_json
         when 'Array'
           value.join('|||')
-        when 'Hash'
-          value.to_json
         else
           value.to_s
         end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe FeatureSetting::FsSetting, type: :model do
-  let(:fss) do 
+  let(:fss) do
     class TestSetting < FeatureSetting::Setting
       SETTINGS = {
         test: 'value',
@@ -56,6 +56,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
 
       after do
         fss.set!(:version, '0.1.0')
+        fss.reset_settings!
       end
 
       it 'creates getter methods' do
@@ -67,7 +68,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
       it 'caches stored values, ignoring any changes' do
         fss.set!(:version, '3.14')
         expect(fss.version).to eq('0.1.0')
-        fss.set!(:hash_test, 'bla')
+        fss.set!(:hash_test, { a: 'bla' })
         expect(fss.hash_test).to eq({ 'one' => 'two', 'three' => { 'four' => 'five', 'six' => 'seven' } })
       end
     end
@@ -95,6 +96,12 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
         fss.version = '0.1.1'
         expect(fss.version).to eq('0.1.1')
       end
+
+      it 'updates hashes' do
+        fss.hash_test = { a: 2 }
+        expected_result = { "one" => "two", "three" => { "four" => "five", "six" => "seven"}, "a" => 2 }
+        expect(fss.hash_test).to eq(expected_result)
+      end
     end
 
     describe '.reset_settings!' do
@@ -120,52 +127,52 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
       end
 
       it 'works when using just a hash' do
-        fss.set!(test: 'new value')
+        fss.set!(:test, 'new value')
         expect(fss.test).to eq('new value')
       end
 
       it 'sets Array values' do
-        fss.set!(test: %w(one two three))
+        fss.set!(:test, %w(one two three))
         expect(fss.test).to eq(%w(one two three))
       end
 
       it 'sets Float values' do
-        fss.set!(test: 1.3)
+        fss.set!(:test, 1.3)
         expect(fss.test).to eq(1.3)
       end
 
       it 'sets Fixnum values' do
-        fss.set!(test: 42)
+        fss.set!(:test, 42)
         expect(fss.test).to eq(42)
       end
 
       it 'sets Symbol values' do
-        fss.set!(test: :ok)
+        fss.set!(:test, :ok)
         expect(fss.test).to eq(:ok)
       end
 
       it 'sets Boolean (FalseClass) values' do
-        fss.set!(test: false)
+        fss.set!(:test, false)
         expect(fss.test).to eq(false)
       end
 
       it 'sets Boolean (TrueClass) values' do
-        fss.set!(test: true)
+        fss.set!(:test, true)
         expect(fss.test).to eq(true)
       end
 
       it 'sets nil to false' do
-        fss.set!(test: nil)
+        fss.set!(:test, nil)
         expect(fss.test).to eq(false)
       end
 
       it 'sets hashes as JSON' do
-        fss.set!(test: { key1: 123, key2: 345 })
+        fss.set!(:test, { key1: 123, key2: 345 })
         expect(fss.test).to eq({ 'key1' => 123, 'key2' => 345 })
       end
 
       it 'returns hashes with_indifferent_access' do
-        fss.set!(test: { key1: 123, key2: 345 })
+        fss.set!(:test, { key1: 123, key2: 345 })
         expect(fss.test[:key1]).to eq(123)
       end
     end
