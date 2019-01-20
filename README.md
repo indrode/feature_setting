@@ -119,8 +119,8 @@ Settings.update!(:setting_one, 1000)
 Settings.update!('setting_one', 1000)
 ```
 
-*NEW IN VERSION 1.6:* Hashes values can be updated individually and will not overwrite the entire hash:
-```
+**NEW IN VERSION 1.6:** Hashes values can be updated individually and will not overwrite the entire hash:
+```ruby
 Settings.setting_five = { key1: 'another_value' }
 => setting_five:  { key1: 'another_value', key2: 'value2' }
 
