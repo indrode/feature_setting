@@ -146,6 +146,11 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
         expect(fss.test).to eq(42)
       end
 
+      it 'sets Integer values' do
+        fss.set!(:test, 6512840)
+        expect(fss.test).to eq(6512840)
+      end
+
       it 'sets Symbol values' do
         fss.set!(:test, :ok)
         expect(fss.test).to eq(:ok)

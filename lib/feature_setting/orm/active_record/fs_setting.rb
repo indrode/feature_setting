@@ -4,8 +4,8 @@ require 'json'
 module FeatureSetting
   class FsSetting < ActiveRecord::Base
     SETTINGS = {
-      test: 'value',
-    }
+      test: 'value'
+    }.freeze
 
     def settings
       self.class::SETTINGS
@@ -17,16 +17,16 @@ module FeatureSetting
 
     class << self
       def settings
-        self.new.settings
+        new.settings
       end
 
       def klass
-        self.new.klass.to_s
+        new.klass.to_s
       end
 
       def init_settings!(remove_old_settings = false)
         settings.each do |key, value|
-          self.create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(klass: klass, key: key)
+          create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(klass: klass, key: key)
           define_getter_method(key)
           define_setter_method(key)
         end
@@ -35,8 +35,8 @@ module FeatureSetting
 
       def cache_settings!
         settings.each do |key, value|
-          self.create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(klass: klass, key: key)
-          record = self.where(key: key, klass: klass).first
+          create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(klass: klass, key: key)
+          record = where(key: key, klass: klass).first
           value = convert_to_type(record.value, record.value_type)
           define_getter_method(key) { value }
         end
@@ -44,7 +44,7 @@ module FeatureSetting
 
       def define_getter_method(key, &block)
         block = Proc.new do
-          record = self.where(key: key, klass: klass).first
+          record = where(key: key, klass: klass).first
           convert_to_type(record.value, record.value_type)
         end unless block_given?
 
@@ -58,21 +58,23 @@ module FeatureSetting
       end
 
       def remove_old_settings!
-        self.where(klass: klass, key: all_stored_keys - defined_keys).destroy_all
+        where(klass: klass, key: all_stored_keys - defined_keys).destroy_all
       end
 
       def reset_settings!
-        self.where(klass: klass).destroy_all
+        where(klass: klass).destroy_all
         init_settings!
       end
 
       def set!(key = nil, value = nil)
-        fail 'ERROR: FsSetting key is missing or does not exist.' unless defined_keys.include?(key.to_s)
-        record = self.where(key: key.to_s, klass: klass).first
+        raise 'ERROR: FsSetting key is missing or does not exist.' unless defined_keys.include?(key.to_s)
+
+        record = where(key: key.to_s, klass: klass).first
         old_value = convert_to_type(record.value, record.value_type)
 
         if record.value_type == 'Hash'
-          fail 'ERROR: The value for a setting of type Hash must be a Hash.' unless value.is_a?(Hash)
+          raise 'ERROR: The value for a setting of type Hash must be a Hash.' unless value.is_a?(Hash)
+
           new_value = old_value.update(value)
           value_type = 'Hash'
         else
@@ -100,7 +102,7 @@ module FeatureSetting
 
       def stored_settings
         hash = {}
-        self.where(klass: klass).each do |record|
+        where(klass: klass).each do |record|
           hash[record.key.to_sym] = convert_to_type(record.value, record.value_type)
         end
 
@@ -110,7 +112,7 @@ module FeatureSetting
       private
 
       def all_stored_keys
-        self.all.pluck(:key)
+        all.pluck(:key)
       end
 
       def convert_to_type(value, type)
