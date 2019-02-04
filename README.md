@@ -112,11 +112,6 @@ You can now do the following:
 Settings.setting_one # => 12300
 Settings.setting_one = 2000
 Settings.setting_one # => 2000
-
-# other ways to set setting values:
-Settings.update!(setting_one: 1000)
-Settings.update!(:setting_one, 1000)
-Settings.update!('setting_one', 1000)
 ```
 
 **NEW IN VERSION 1.6:** Hashes values can be updated individually and will not overwrite the entire hash:
