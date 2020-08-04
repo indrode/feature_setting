@@ -15,4 +15,5 @@ ActiveRecord::Base.establish_connection(
   database: ':memory:'
 )
 ActiveRecord::Base.logger = Logger.new(STDOUT)
+ActiveRecord::Base.logger.level = :warn
 CreateFsTables.up
