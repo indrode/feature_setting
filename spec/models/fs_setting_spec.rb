@@ -1,21 +1,23 @@
 require 'spec_helper'
 
 RSpec.describe FeatureSetting::FsSetting, type: :model do
-  let(:fss) do
-    class TestSetting < FeatureSetting::Setting
-      SETTINGS = {
-        test: 'value',
-        version: '0.1.0',
-        sym_test: :a_symbol,
-        hash_test: {
-          one: :two,
-          three: {
-            four: :five,
-            six: :seven
-          }
+
+  class TestSetting < FeatureSetting::Setting
+    SETTINGS = {
+      test: 'value',
+      version: '0.1.0',
+      sym_test: :a_symbol,
+      hash_test: {
+        one: :two,
+        three: {
+          four: :five,
+          six: :seven
         }
       }
-    end
+    }.freeze
+  end
+
+  let(:fss) do
     TestSetting
   end
 

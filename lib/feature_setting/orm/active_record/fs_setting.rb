@@ -82,7 +82,7 @@ module FeatureSetting
           value_type = value.class.to_s
         end
 
-        record.update_attributes(
+        record.update(
           value: convert_to_string(new_value, new_value.class.to_s),
           value_type: value_type
         )
