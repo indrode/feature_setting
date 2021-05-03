@@ -81,6 +81,13 @@ RSpec.describe FeatureSetting::FsFeature, type: :model do
       it 'creates enabled? methods' do
         expect(fsf.test_enabled?).to be_falsey
       end
+
+      it 'returns false when feature is deleted after initialization' do
+        fsf.enable_test!
+        expect(fsf.test_enabled?).to be_truthy
+        fsf.where(key: 'test').first.destroy
+        expect(fsf.test_enabled?).to be_falsey
+      end
     end
 
     describe '.enable!' do
