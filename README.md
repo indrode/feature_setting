@@ -1,7 +1,7 @@
 # feature_setting
 
 [![Gem
-Version](https://badge.fury.io/rb/feature_setting.svg)](http://badge.fury.io/rb/feature_setting)
+Version](https://badge.fury.io/rb/feature_setting.svg)](https://badge.fury.io/rb/feature_setting)
 [![Code
 Climate](https://codeclimate.com/github/indrode/feature_setting/badges/gpa.svg)](https://codeclimate.com/github/indrode/feature_setting)
 [![Test
