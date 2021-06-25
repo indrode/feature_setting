@@ -1,8 +1,21 @@
 require 'active_record'
 require 'json'
+require_relative './../../../helpers/convert_value'
 
 module FeatureSetting
   class FsSetting < ActiveRecord::Base
+    class SettingKeyNotFoundError < StandardError
+      def message
+        'Key is missing or does not exist.'
+      end
+    end
+
+    class SettingTypeMismatchError < StandardError
+      def message
+        'The value for a setting of type Hash must be a Hash.'
+      end
+    end
+
     SETTINGS = {
       test: 'value'
     }.freeze
@@ -24,9 +37,9 @@ module FeatureSetting
         new.klass.to_s
       end
 
-      def init_settings!(remove_old_settings = false)
+      def init_settings!(remove_old_settings: false)
         settings.each do |key, value|
-          create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(klass: klass, key: key)
+          create_setting(key, value)
           define_getter_method(key)
           define_setter_method(key)
         end
@@ -35,18 +48,20 @@ module FeatureSetting
 
       def cache_settings!
         settings.each do |key, value|
-          create_with(key: key, value: convert_to_string(value, value.class.to_s), value_type: value.class.to_s, klass: klass).find_or_create_by(klass: klass, key: key)
-          record = where(key: key, klass: klass).first
-          value = convert_to_type(record.value, record.value_type)
+          create_setting(key, value)
+          record = find_by key: key, klass: klass
+          value = ConvertValue.convert_to_type(record.value, record.value_type)
           define_getter_method(key) { value }
         end
       end
 
       def define_getter_method(key, &block)
-        block = Proc.new do
-          record = where(key: key, klass: klass).first
-          convert_to_type(record.value, record.value_type)
-        end unless block_given?
+        unless block_given?
+          block = proc do
+            record = find_by key: key, klass: klass
+            ConvertValue.convert_to_type(record.value, record.value_type)
+          end
+        end
 
         define_singleton_method(key.to_s) { block.call }
       end
@@ -58,22 +73,22 @@ module FeatureSetting
       end
 
       def remove_old_settings!
-        where(klass: klass, key: all_stored_keys - defined_keys).destroy_all
+        where(klass: klass, key: all_stored_keys - defined_keys).delete_all
       end
 
       def reset_settings!
-        where(klass: klass).destroy_all
-        init_settings!
+        init_settings! if where(klass: klass).delete_all
       end
 
+      # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       def set!(key = nil, value = nil)
-        raise 'ERROR: FsSetting key is missing or does not exist.' unless defined_keys.include?(key.to_s)
+        raise SettingNotExistsError unless defined_keys.include?(key.to_s)
 
-        record = where(key: key.to_s, klass: klass).first
-        old_value = convert_to_type(record.value, record.value_type)
+        record = find_by key: key.to_s, klass: klass
+        old_value = ConvertValue.convert_to_type(record.value, record.value_type)
 
         if record.value_type == 'Hash'
-          raise 'ERROR: The value for a setting of type Hash must be a Hash.' unless value.is_a?(Hash)
+          raise SettingTypeMismatchError unless value.is_a?(Hash)
 
           new_value = old_value.update(value)
           value_type = 'Hash'
@@ -83,16 +98,18 @@ module FeatureSetting
         end
 
         record.update(
-          value: convert_to_string(new_value, new_value.class.to_s),
+          value: ConvertValue.convert_to_string(new_value, new_value.class.to_s),
           value_type: value_type
         )
       end
-      alias_method :update!, :set!
+      alias update! set!
+      # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
       def existing_key(key = nil, hash = {})
-        settings.key?(hash.keys.first) || settings.key?(key.to_sym)
+        return unless settings.key?(hash.keys.first) || settings.key?(key.to_sym)
+
         hash.keys.first || key.to_sym
-      rescue
+      rescue StandardError
         nil
       end
 
@@ -103,7 +120,7 @@ module FeatureSetting
       def stored_settings
         hash = {}
         where(klass: klass).each do |record|
-          hash[record.key.to_sym] = convert_to_type(record.value, record.value_type)
+          hash[record.key.to_sym] = ConvertValue.convert_to_type(record.value, record.value_type)
         end
 
         hash
@@ -115,40 +132,16 @@ module FeatureSetting
         all.pluck(:key)
       end
 
-      def convert_to_type(value, type)
-        case type
-        when 'String'
-          value.to_s
-        when 'TrueClass'
-          true
-        when 'NilClass'
-          false
-        when 'FalseClass'
-          false
-        when 'Fixnum'
-          value.to_i
-        when 'Integer'
-          value.to_i
-        when 'Float'
-          value.to_f
-        when 'Symbol'
-          value.to_sym
-        when 'Array'
-          value.split('|||')
-        when 'Hash'
-          Hashie::Mash.new(JSON.parse(value))
-        end
-      end
-
-      def convert_to_string(value, type)
-        case type
-        when 'Hash', 'Hashie::Mash'
-          value.to_json
-        when 'Array'
-          value.join('|||')
-        else
-          value.to_s
-        end
+      def create_setting(key, value)
+        create_with(
+          key: key,
+          value: ConvertValue.convert_to_string(value, value.class.to_s),
+          value_type: value.class.to_s,
+          klass: klass
+        ).find_or_create_by(
+          klass: klass,
+          key: key
+        )
       end
     end
   end

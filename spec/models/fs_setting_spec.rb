@@ -1,9 +1,11 @@
 require 'spec_helper'
 
 RSpec.describe FeatureSetting::FsSetting, type: :model do
+  subject(:fss) { TestSetting }
 
-  class TestSetting < FeatureSetting::Setting
-    SETTINGS = {
+  before do
+    test_setting = Class.new(described_class)
+    settings_hash = {
       test: 'value',
       version: '0.1.0',
       sym_test: :a_symbol,
@@ -14,11 +16,10 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
           six: :seven
         }
       }
-    }.freeze
-  end
+    }
 
-  let(:fss) do
-    TestSetting
+    stub_const('TestSetting', test_setting)
+    stub_const('TestSetting::SETTINGS', settings_hash)
   end
 
   describe 'class methods' do
@@ -40,7 +41,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
 
     describe '.defined_keys' do
       it 'returns an array of defined setting keys' do
-        expect(fss.defined_keys).to eq(%w(test version sym_test hash_test))
+        expect(fss.defined_keys).to eq(%w[test version sym_test hash_test])
       end
     end
 
@@ -78,7 +79,7 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
     describe '.remove_old_settings!' do
       it 'destroys old settings in database but not defined anymore' do
         fss.create!(key: 'some', klass: 'TestSetting', value: 'value')
-        expect { fss.remove_old_settings! }.to change { fss.count }.from(5).to(4)
+        expect { fss.remove_old_settings! }.to change(fss, :count).from(5).to(4)
       end
     end
 
@@ -101,18 +102,18 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
 
       it 'updates hashes' do
         fss.hash_test = { a: 2 }
-        expected_result = { "one" => "two", "three" => { "four" => "five", "six" => "seven"}, "a" => 2 }
+        expected_result = { 'one' => 'two', 'three' => { 'four' => 'five', 'six' => 'seven' }, 'a' => 2 }
         expect(fss.hash_test).to eq(expected_result)
       end
     end
 
     describe '.reset_settings!' do
-      let(:all_settings) { double(:all_settings) }
-      it 'should destroy the records for this klass' do
-        allow(fss).to receive(:init_settings!)
-        expect(all_settings).to receive(:destroy_all).and_return true
-        expect(fss).to receive(:where).and_return all_settings
-        fss.reset_settings!
+      it 'creates new set of settings on completion' do
+        settings_hash = { test: 'value', version: '0.1.0' }
+
+        stub_const('TestSetting::SETTINGS', settings_hash)
+
+        expect { fss.reset_settings! }.to change(fss, :count).from(4).to(2)
       end
     end
 
@@ -134,8 +135,8 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
       end
 
       it 'sets Array values' do
-        fss.set!(:test, %w(one two three))
-        expect(fss.test).to eq(%w(one two three))
+        fss.set!(:test, %w[one two three])
+        expect(fss.test).to eq(%w[one two three])
       end
 
       it 'sets Float values' do
@@ -149,8 +150,8 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
       end
 
       it 'sets Integer values' do
-        fss.set!(:test, 6512840)
-        expect(fss.test).to eq(6512840)
+        fss.set!(:test, 6_512_840)
+        expect(fss.test).to eq(6_512_840)
       end
 
       it 'sets Symbol values' do
@@ -190,24 +191,24 @@ RSpec.describe FeatureSetting::FsSetting, type: :model do
     end
 
     describe '.existing_key(key, hash)' do
-      before do
-        allow(fss).to receive(:settings).and_return(key1: '10', key2: '20')
-      end
-
       it 'returns the key' do
-        expect(fss.existing_key('key1')).to eq(:key1)
+        expect(fss.existing_key('sym_test')).to eq(:sym_test)
       end
 
       it 'returns the key if hash is passed' do
-        expect(fss.existing_key(nil, key1: '10')).to eq(:key1)
+        expect(fss.existing_key(nil, sym_test: 'a_symbol')).to eq(:sym_test)
       end
 
       it 'raises error if key is nil' do
         expect(fss.existing_key(nil, {})).to be_nil
       end
 
-      it 'raises error if key is nil' do
+      it 'raises error if key is not passed' do
         expect(fss.existing_key).to be_nil
+      end
+
+      it 'returns nil if key does not exist' do
+        expect(fss.existing_key('key1')).to be_nil
       end
     end
   end

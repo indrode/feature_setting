@@ -4,7 +4,7 @@ module FeatureSetting
   class FsFeature < ActiveRecord::Base
     FEATURES = {
       test: false
-    }
+    }.freeze
 
     def features
       self.class::FEATURES
@@ -15,25 +15,25 @@ module FeatureSetting
     end
 
     class << self
-      def method_missing(m, *args)
+      def method_missing(_method, *_args)
         false
       end
 
-      def respond_to_missing?(*args)
+      def respond_to_missing?(*_args)
         true
       end
 
       def features
-        self.new.features
+        new.features
       end
 
       def klass
-        self.new.klass.to_s
+        new.klass.to_s
       end
 
-      def init_features!(remove_old_features = false)
+      def init_features!(remove_old_features: false)
         features.each do |key, value|
-          self.create_with(key: key, enabled: value, klass: klass).find_or_create_by(klass: klass, key: key)
+          create_feature(key, value)
           define_checker_method(key)
           define_enabler_method(key)
           define_disabler_method(key)
@@ -43,8 +43,8 @@ module FeatureSetting
 
       def cache_features!
         features.each do |key, value|
-          self.create_with(key: key, enabled: value, klass: klass).find_or_create_by(klass: klass, key: key)
-          value = self.where(key: key, klass: klass).first.enabled
+          create_feature(key, value)
+          value = find_by(key: key, klass: klass).enabled
           define_checker_method(key) { value }
           define_enabler_method(key) { false }
           define_disabler_method(key) { false }
@@ -52,48 +52,53 @@ module FeatureSetting
       end
 
       def define_checker_method(key, &block)
-        block = Proc.new do
-          record = self.where(key: key, klass: klass).first
-          record ? record.enabled : false
-        end unless block_given?
+        unless block_given?
+          block = proc do
+            record = find_by key: key, klass: klass
+            record ? record.enabled : false
+          end
+        end
         define_singleton_method("#{key}_enabled?") { block.call }
       end
 
       def define_enabler_method(key, &block)
-        block = Proc.new do
-          enable!(key)
-        end unless block_given?
+        unless block_given?
+          block = proc do
+            enable!(key)
+          end
+        end
         define_singleton_method("enable_#{key}!") { block.call }
       end
 
       def define_disabler_method(key, &block)
-        block = Proc.new do
-          disable!(key)
-        end unless block_given?
+        unless block_given?
+          block = proc do
+            disable!(key)
+          end
+        end
         define_singleton_method("disable_#{key}!") { block.call }
       end
 
       def remove_old_features!
-        self.where(key: all_stored_features - defined_features).destroy_all
+        where(key: all_stored_features - defined_features).destroy_all
       end
 
       def reset_features!
-        self.where(klass: klass).destroy_all
-        init_features!
+        init_features! if where(klass: klass).delete_all
       end
 
       def enable!(key)
-        if features.key?(key.to_sym)
-          record = self.where(key: key, klass: klass).first
-          record.update(enabled: true)
-        end
+        return unless features.key?(key.to_sym)
+
+        record = find_by key: key, klass: klass
+        record.update(enabled: true)
       end
 
       def disable!(key)
-        if features.key?(key.to_sym)
-          record = self.where(key: key, klass: klass).first
-          record.update(enabled: false)
-        end
+        return unless features.key?(key.to_sym)
+
+        record = find_by key: key, klass: klass
+        record.update(enabled: false)
       end
 
       def defined_features
@@ -103,7 +108,18 @@ module FeatureSetting
       private
 
       def all_stored_features
-        self.all.pluck(:key)
+        all.pluck(:key)
+      end
+
+      def create_feature(key, value)
+        create_with(
+          key: key,
+          enabled: value,
+          klass: klass
+        ).find_or_create_by(
+          klass: klass,
+          key: key
+        )
       end
     end
   end
