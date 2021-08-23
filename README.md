@@ -30,8 +30,8 @@ if Setting.error_threshold > 500
     # do this
 end
 
-if Setting.allowed_users.include?(current_user)
-  # to that
+if Setting.allowed_users.include?(current_user.id)
+  # do that
 end
 ```
 
