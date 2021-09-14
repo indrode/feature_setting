@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.require_paths         = ['lib']
 
   spec.add_runtime_dependency 'activerecord', '>= 4.0'
-  spec.add_runtime_dependency 'activesupport', '>= 4.0'
+  spec.add_runtime_dependency 'activesupport', '~> 5.2.4'
   spec.add_runtime_dependency 'hashie', '>= 3.4.3'
   spec.add_development_dependency 'bundler', '>= 1.9'
   spec.add_development_dependency 'byebug'
