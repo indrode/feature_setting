@@ -53,7 +53,6 @@ This generates a migration file. To run this migration:
 
 The next step is to define your Feature and/or Setting classes.
 
-
 ## Usage
 
 ### Features
@@ -90,7 +89,6 @@ Features.disable_newfeature!
 
 Default values for features are defined in your class and current values are persisted in the database.
 
-
 ### Settings
 
 To create a new Setting class, inherit a class from `FeatureSetting::Setting` (if using a gem version prior to `1.2.0` use `FeatureSetting::FsSetting`). Then define your settings in a hash called `SETTINGS` and call `init_settings!`. The following example shows the setup and some possible definitions.
@@ -102,7 +100,7 @@ class Settings < FeatureSetting::Setting
     setting_two:   'some string',
     setting_three: %w(one two three),
     setting_four:  ENV['SETTING_FOUR'],
-    setting_five:  { key1: 'value1', key2: 'value2' }
+    setting_five:  { key1: 'value1', key2: 'value2' },
     setting_six:   true
   }
 
@@ -186,7 +184,6 @@ Notes:
 
 - Contributions without tests won't be accepted.
 - Please don't update the gem version.
-
 
 ## License
 
