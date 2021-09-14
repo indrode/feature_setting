@@ -6,7 +6,7 @@ Version](https://badge.fury.io/rb/feature_setting.svg)](https://badge.fury.io/rb
 Climate](https://codeclimate.com/github/indrode/feature_setting/badges/gpa.svg)](https://codeclimate.com/github/indrode/feature_setting)
 [![Test
 Coverage](https://codeclimate.com/github/indrode/feature_setting/badges/coverage.svg)](https://codeclimate.com/github/indrode/feature_setting/coverage)
-[![security](https://hakiri.io/github/indrode/feature_setting/master.svg)](https://hakiri.io/github/indrode/feature_setting/master) [![Build Status](https://travis-ci.com/indrode/feature_setting.svg?branch=master)](https://travis-ci.org/indrode/feature_setting)
+[![security](https://hakiri.io/github/indrode/feature_setting/master.svg)](https://hakiri.io/github/indrode/feature_setting/master) [![Build Status](https://travis-ci.com/indrode/feature_setting.svg?branch=master)](https://travis-ci.com/indrode/feature_setting)
 
 This gem introduces the concept of "features" and "settings" to your Rails app. It provides an easy way to define such features and settings with default values right in your code and will persist them in the database.
 
