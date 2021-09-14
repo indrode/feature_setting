@@ -54,7 +54,7 @@ module FeatureSetting
       def define_checker_method(key, &block)
         unless block_given?
           block = proc do
-            record = find_by key: key, klass: klass
+            record = find_by(key: key, klass: klass)
             record ? record.enabled : false
           end
         end
@@ -90,14 +90,14 @@ module FeatureSetting
       def enable!(key)
         return unless features.key?(key.to_sym)
 
-        record = find_by key: key, klass: klass
+        record = find_by(key: key, klass: klass)
         record.update(enabled: true)
       end
 
       def disable!(key)
         return unless features.key?(key.to_sym)
 
-        record = find_by key: key, klass: klass
+        record = find_by(key: key, klass: klass)
         record.update(enabled: false)
       end
 

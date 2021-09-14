@@ -49,7 +49,7 @@ module FeatureSetting
       def cache_settings!
         settings.each do |key, value|
           create_setting(key, value)
-          record = find_by key: key, klass: klass
+          record = find_by(key: key, klass: klass)
           value = ConvertValue.convert_to_type(record.value, record.value_type)
           define_getter_method(key) { value }
         end
@@ -58,7 +58,7 @@ module FeatureSetting
       def define_getter_method(key, &block)
         unless block_given?
           block = proc do
-            record = find_by key: key, klass: klass
+            record = find_by(key: key, klass: klass)
             ConvertValue.convert_to_type(record.value, record.value_type)
           end
         end
@@ -84,7 +84,7 @@ module FeatureSetting
       def set!(key = nil, value = nil)
         raise SettingNotExistsError unless defined_keys.include?(key.to_s)
 
-        record = find_by key: key.to_s, klass: klass
+        record = find_by(key: key.to_s, klass: klass)
         old_value = ConvertValue.convert_to_type(record.value, record.value_type)
 
         if record.value_type == 'Hash'
