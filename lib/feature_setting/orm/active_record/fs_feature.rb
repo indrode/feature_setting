@@ -54,8 +54,7 @@ module FeatureSetting
       def define_checker_method(key, &block)
         unless block_given?
           block = proc do
-            record = find_by(key: key, klass: klass)
-            record ? record.enabled : false
+            find_by(key: key, klass: klass)&.enabled ? true : false
           end
         end
         define_singleton_method("#{key}_enabled?") { block.call }
